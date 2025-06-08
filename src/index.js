@@ -1,4 +1,5 @@
 import { buildTrie } from "./buildTrie.js";
+import {matchesConstraints} from "./matchesConstraines.js";
 
 export default function serve(routes, request) {
   const trie = buildTrie(routes);
@@ -29,6 +30,11 @@ export default function serve(routes, request) {
 
   if (!handlerInfo) {
     throw new Error(`No route matching method: ${method} on path: ${path}`);
+  }
+
+  const { constraints = {} } = handlerInfo;
+  if (!matchesConstraints(params, constraints)) {
+    throw new Error(`Invalid parameter format in path: ${path}`);
   }
 
   return {

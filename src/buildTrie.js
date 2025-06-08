@@ -35,6 +35,7 @@ export const buildTrie = (routes) => {
     node.handlers[method] = {
       handler: route.handler,
       routePath: route.path,
+      constraints: route.constraints || {},
     };
   }
 

@@ -93,4 +93,42 @@ describe('serve', () => {
 
     expect(() => serve(routes, {path: '/unknown'})).toThrow('Route not found: /unknown');
   });
+
+  test('should match constraints', () => {
+    const routes = [
+      {
+        path: '/courses/:course_id/exercises/:id',
+        handler: {
+          body: 'exercise!'
+        },
+        constraints: {id: '\\d+', course_id: '^[a-z]+$'},
+      },
+    ];
+
+    const result = serve(routes, {path: '/courses/js/exercises/1'});
+
+    expect(result.handler.body).toBe('exercise!');
+    expect(result).toEqual({
+      handler: {body: 'exercise!'},
+      path: '/courses/js/exercises/1',
+      params: {id: '1', course_id: 'js'},
+      method: 'GET'
+    })
+  })
+
+  test('should throw on constraints', () => {
+    const routes = [
+      {
+        path: '/courses/:course_id/exercises/:id',
+        handler: {
+          body: 'exercise!'
+        },
+        constraints: {id: '\\d+', course_id: '^[a-z]+$'},
+      },
+    ];
+
+    const path = '/courses/noop/exercises/js'
+
+    expect(() => serve(routes, { path })).toThrow(`Invalid parameter format in path: ${path}`);
+  })
 });
