@@ -26,8 +26,16 @@ export const buildTrie = (routes) => {
       }
     }
 
-    node.handler = route.handler;
-    node.routePath = route.path;
+    if (!node.handlers) {
+      node.handlers = {};
+    }
+
+    const method = route.method || 'GET';
+
+    node.handlers[method] = {
+      handler: route.handler,
+      routePath: route.path,
+    };
   }
 
   return root;

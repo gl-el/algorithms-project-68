@@ -1,11 +1,11 @@
-import {buildTrie} from "./buildTrie.js";
+import { buildTrie } from "./buildTrie.js";
 
-export default function serve(routes, path) {
+export default function serve(routes, request) {
   const trie = buildTrie(routes);
-
-  const params = {};
+  const { path, method } = request;
   const segments = path.split('/').filter(Boolean);
   let node = trie;
+  const params = {};
 
   for (const seg of segments) {
     if (node.children[seg]) {
@@ -16,7 +16,7 @@ export default function serve(routes, path) {
       );
 
       if (paramKey) {
-        const paramName = paramKey.slice(1); // убираем ":"
+        const paramName = paramKey.slice(1);
         params[paramName] = seg;
         node = node.children[paramKey];
       } else {
@@ -25,13 +25,16 @@ export default function serve(routes, path) {
     }
   }
 
-  if (!node.handler) {
-    throw new Error(`Route not found: ${path}`);
+  const handlerInfo = node.handlers?.[method || 'GET'];
+
+  if (!handlerInfo) {
+    throw new Error(`No route matching method: ${method} on path: ${path}`);
   }
 
   return {
     path,
-    handler: node.handler,
+    method: handlerInfo.method || (method || 'GET'),
     params,
+    handler: handlerInfo.handler,
   };
 }
