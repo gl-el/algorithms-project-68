@@ -1,4 +1,5 @@
-import TrieNode from './TrieNode';
+// eslint-disable-next-line import/extensions
+import TrieNode from './TrieNode.js';
 
 const buildTrie = (routes) => {
   const root = new TrieNode();

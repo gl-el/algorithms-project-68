@@ -1,4 +1,5 @@
-import buildTrie from './buildTrie';
+// eslint-disable-next-line import/extensions
+import buildTrie from './buildTrie.js';
 
 export default function serve(routes, request) {
   const trie = buildTrie(routes);
