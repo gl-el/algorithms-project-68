@@ -20,7 +20,7 @@
     "vitest": "^3.1.3"
   },
   "lint-staged": {
-    "*.js": "eslint --fix"
+    "*.js": "eslint . --fix"
   },
   "devDependencies": {
     "eslint": "^8.57.1",

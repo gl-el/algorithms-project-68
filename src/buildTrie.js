@@ -1,30 +1,28 @@
-import {TrieNode} from "./TrieNode.js";
+import TrieNode from './TrieNode';
 
-export const buildTrie = (routes) => {
+const buildTrie = (routes) => {
   const root = new TrieNode();
 
-  for (const route of routes) {
+  routes.forEach((route) => {
     let node = root;
     const segments = route.path.split('/').filter(Boolean);
 
-    for (const seg of segments) {
-      if (seg.startsWith(':')) {
-        const paramName = seg.slice(1);
-        const paramKey = `:${paramName}`;
+    segments.forEach((seg) => {
+      const isParam = seg.startsWith(':');
+      const key = isParam ? `:${seg.slice(1)}` : seg;
 
-        if (!node.children[paramKey]) {
-          node.children[paramKey] = new TrieNode();
+      if (!node.children[key]) {
+        const child = new TrieNode();
+        if (isParam) {
+          const paramName = seg.slice(1);
+          child.paramName = paramName;
+          child.constraint = route.constraints?.[paramName] || null;
         }
-
-        node = node.children[paramKey];
-
-      } else {
-        if (!node.children[seg]) {
-          node.children[seg] = new TrieNode();
-        }
-        node = node.children[seg];
+        node.children[key] = child;
       }
-    }
+
+      node = node.children[key];
+    });
 
     if (!node.handlers) {
       node.handlers = {};
@@ -36,8 +34,11 @@ export const buildTrie = (routes) => {
       handler: route.handler,
       routePath: route.path,
       constraints: route.constraints || {},
+      method,
     };
-  }
+  });
 
   return root;
 };
+
+export default buildTrie;
